@@ -13,7 +13,7 @@ use crate::command::{
     ReplacementTemplate, Substitution, Transliteration,
 };
 use crate::delimited_parser::{parse_char_escape, parse_regex, parse_transliteration};
-use crate::error_handling::{compilation_error, semantic_error};
+use crate::error_handling::{ScriptLocation, compilation_error, semantic_error};
 use crate::fast_regex::Regex;
 use crate::named_writer::NamedWriter;
 use crate::script_char_provider::ScriptCharProvider;
@@ -710,7 +710,7 @@ fn compile_regex(
     };
 
     // Compile into engine.
-    let compiled = Regex::new(&pattern).map_err(|e| {
+    let compiled = Regex::new(ScriptLocation::at_position(lines, line), &pattern).map_err(|e| {
         compilation_error::<Regex>(lines, line, format!("invalid regex '{}': {}", pattern, e))
             .unwrap_err()
     })?;
